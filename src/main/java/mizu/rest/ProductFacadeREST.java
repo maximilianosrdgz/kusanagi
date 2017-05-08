@@ -13,12 +13,15 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by ms.rodriguez on 20/4/2017.
  */
 @Path("/product")
 public class ProductFacadeREST extends AbstractFacade<Product> {
+
+    private JsonObjectProxy<Product> proxy = new JsonObjectProxy<>(Product.class);
 
     public ProductFacadeREST() {
         super(Product.class);
@@ -34,7 +37,7 @@ public class ProductFacadeREST extends AbstractFacade<Product> {
     @POST
     @Consumes("application/json")
     public void create(@RequestBody String json) throws IOException {
-        super.create(JsonObjectProxy.ProductFromJson(json));
+        super.create(proxy.getObjectFromJson(json));
     }
 
     @GET
@@ -44,11 +47,17 @@ public class ProductFacadeREST extends AbstractFacade<Product> {
         return super.find(id);
     }
 
+    @GET
+    @Produces("application/json")
+    public List<Product> findAll() {
+        return super.findAll();
+    }
+
     @PUT
     @Path("{id}")
     @Consumes("application/json")
     public void update(@PathParam("id") String id, @RequestBody String json) throws IOException {
-        super.update(JsonObjectProxy.ProductFromJson(json));
+        super.update(proxy.getObjectFromJson(json));
     }
 
     @DELETE
@@ -57,4 +66,10 @@ public class ProductFacadeREST extends AbstractFacade<Product> {
         super.delete(super.find(id));
     }
 
+    @GET
+    @Path("/count")
+    @Produces("application/json")
+    public int count() {
+        return super.count(super.findAll());
+    }
 }

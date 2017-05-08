@@ -1,7 +1,5 @@
 package mizu.proxy;
 
-import mizu.domain.Category;
-import mizu.domain.Product;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
@@ -9,16 +7,17 @@ import java.io.IOException;
 /**
  * Created by ms.rodriguez on 20/4/2017.
  */
-public class JsonObjectProxy {
+public class JsonObjectProxy<T> {
 
-    private static ObjectMapper mapper = new ObjectMapper();
+    private final Class<T> entityClass;
 
-    public static Product ProductFromJson(String json) throws IOException {
-        return mapper.readValue(json, Product.class);
+    public JsonObjectProxy(Class<T> entityClass) {
+        this.entityClass = entityClass;
     }
 
-    public static Category CategoryFromJson(String json) throws IOException {
-        return mapper.readValue(json, Category.class);
-    }
+    private ObjectMapper mapper = new ObjectMapper();
 
+    public T getObjectFromJson(String json) throws IOException {
+        return mapper.readValue(json, this.entityClass);
+    }
 }

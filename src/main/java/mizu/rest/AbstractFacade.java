@@ -3,6 +3,8 @@ package mizu.rest;
 import mizu.util.EntityManagerUtil;
 
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaQuery;
+import java.util.List;
 
 /**
  * Created by ms.rodriguez on 20/4/2017.
@@ -40,6 +42,16 @@ public abstract class AbstractFacade<T> {
         return entity;
     }
 
+    public List<T> findAll() {
+        CriteriaQuery<T> critQuery = EntityManagerUtil.getEntityManager()
+                .getCriteriaBuilder()
+                .createQuery(this.entityClass);
+        critQuery.select(critQuery.from(this.entityClass));
+        return EntityManagerUtil.getEntityManager()
+                .createQuery(critQuery)
+                .getResultList();
+    }
+
     public void update(T entity) {
         EntityManager em = EntityManagerUtil.getEntityManager();
         try {
@@ -61,6 +73,10 @@ public abstract class AbstractFacade<T> {
         catch (Exception e) {
             em.getTransaction().rollback();
         }
+    }
+
+    public int count(List<T> list) {
+        return list.size();
     }
 
 }
